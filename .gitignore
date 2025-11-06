@@ -5,6 +5,7 @@ build/
 dist/
 wheels/
 *.egg-info
-
+# Don't push data to the Repository. Look into alternatives: Dropbox and S3
+data/*
 # Virtual environments
 .venv
