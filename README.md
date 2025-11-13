@@ -1,4 +1,6 @@
-# **Slay the Spire — Run-Level Win Prediction (Project README)**
+# **Slay the Spire Floor-Level Win Prediction**
+
+![Slay The Spire Image](./misc/image.png)
 
 This project builds a full ML pipeline for predicting **win probability** in *Slay the Spire* using the public metrics dump containing tens of millions of runs. The core idea is simple: every run is a story of evolving decisions: cards taken, relics gained, paths chosen. Our pipeline aims to transform those stories into structured data that machine-learning models can learn from, and learn to give feedback on poor decisions during play.
 
