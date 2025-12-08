@@ -51,6 +51,11 @@ More detail, figures, and evaluation tables are in the [full paper PDF](./result
 
 ---
 
+## **Next Steps**
+
+1. Use multi-model approaches to increase consistency and accuracy of model predictions
+2. Integrate predictor engine in game with a chess.com inspired "Eval Bar" mod to communicate exactly what big-picture decisions tank win likelihood
+
 ## **See Also**
 
 - Lightning talk slides (`results/Lightning Presentation.pptx`)  
@@ -58,7 +63,7 @@ More detail, figures, and evaluation tables are in the [full paper PDF](./result
 
 This repo is a foundation for future work on real-time run evaluation and sequence-based models for deck-building games.
 
---
+---
 
 ## **Project Structure**
 
