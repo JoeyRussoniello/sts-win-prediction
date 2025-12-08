@@ -2,92 +2,81 @@
 
 <img src="./misc/STS-img.jpeg" width="100%">
 
-This project builds a full ML pipeline for predicting **win probability** in *Slay the Spire* using the public metrics dump containing tens of millions of runs. The core idea is simple -- every run is a continuous story of decisions: cards taken, relics gained, paths chosen. Our pipeline aims to transform those stories into structured data that machine-learning models can learn from, and learn to give feedback on poor decisions during play.
+This project builds a full pipeline for predicting **win probability** in *Slay the Spire* using **floor-level reconstructed data** from 126k human runs (≈3M floors).  
+We model how decks evolve, how archetypes form, and how early decisions influence success.
 
-## **Project Motivation**
+For full methodology, experiments, and results, see the accompanying paper in `results/`.
 
-Slay the Spire is uniquely suited for data-driven analysis:  
+---
 
-- every choice meaningfully changes the rest of the run  
-- the rules are stable and deterministic  
-- the dataset is enormous  
-  
-Understanding how deck composition, relic pathing, and floor-to-floor decisions shape victory lets us:
+## **Running Instructions**
 
-- quantify the real difficulty curve of each class  
-- discover latent archetypes through embeddings  
-- identify which strategic decisions correlate with success  
-- build predictive models that understand run trajectory
+Due to large datasets (up to 50GB of demanded CPU RAM), storing the data in Github is not possible, and running the modeling notebooks in Colab is strongly recommended. If running notebooks is necessary:
 
-## **Why This Project Is Different**
+1. Reach out to me at <jmrusso@bu.edu>
+2. I will share the google drive folder (mount point) containing all data and pretrained models
+3. Add the google drive folder in your google drive as a shortcut (instructions provided in notebook 2)
 
-Despite the size and popularity of the Slay the Spire community, there is surprisingly **little rigorous research** on predicting run outcomes from *mid-run* information.  
+All models and notebooks will then work out of box!
 
-Most previous ML attempts fall into two categories:
+---
 
-- **(1) Search-based agents that try to *play* the game**  
-   Often built around Monte Carlo Tree Search or RL, these focus on *decision-making*, not understanding how real human runs evolve.
+## **What’s Here**
 
-- **(2) Win prediction using the *final* deck or end-state summary**  
-   These models cheat by relying on over-informative features (e.g., boss relics, act ending stats, final gold, floor number, or final deck composition).  
-   They don't tell us *how* the run developed or which early decisions matter.
+- A deterministic replay system that reconstructs **exact deck and relic states** on every floor  
+- High-dimensional **x-hot deck vectors** compressed into **SVD embeddings**  
+- Baseline models (LogReg, MLP) and **sequential models (LSTMs)** for per-floor win prediction  
+- Tools for generating **win-probability curves** across a run  
 
-What’s missing is an analysis of the *actual* floor by floor, or card by card trajectory of a run. We aim to model win probability using realistic mid-run information that a player (or agent) would actually have.  
+Notebooks walk through each stage:
 
-This project fills that gap by reconstructing complete run histories and building models that predict outcomes **long before the end-state is known**, giving genuine insight into strategy, archetype formation, and risk across the run.
+- `1 - Transform Run-Level to Floor-Level.ipynb`  
+- `2 - Card Handling.ipynb`  
+- `3 - Exploratory Data Analytics.ipynb`  
+- `4 - Modeling.ipynb`
 
-## **Notebook Structure**
+By the end, we create a run-strength analyzer that can make sequential and stable predictions of run strength, successfully finding "choke points" where a run is no longer likely to win.
 
-### **1) Processing**
+<img src="./misc/2LayerLstmPreds.png" width="100%">
 
-We transform each nested JSON "run" into a **floor-by-floor dataset**, including:
+---
 
-- HP, gold, path type, and event outcomes  
-- card picks, relic gains, shops, damage logs  
-- reconstructed **deck state on every floor**  
-- reconstructed **relic loadout**  
-  
-This produces a clean, rectangular dataset where each row is **one floor of one run**, ready for analysis and modeling.
+## **Key Findings (Short Version)**
 
-### **2) Card Handling (Encoding & Embeddings)**
+- SVD deck embeddings capture meaningful archetype structure  
+- Sequential models produce smoother, more accurate predictions than per-floor baselines  
+- Win probability becomes reliably separable by ~Floor 35  
 
-Decks contain hundreds of possible cards and upgrades, making encoding the central challenge of the project.  
+More detail, figures, and evaluation tables are in the [full paper PDF](./results/Sequential%20Win%20Probability%20Modeling%20in%20Slay%20The%20Spire%20Using%20Floor%20Level%20Representations%20and%20Recurrent%20Neural%20Architectures.pdf).
 
-We explore:
+---
 
-- **X-hot (one-hot with counts)** for exact card representation  
-- **SVD embeddings** to compress decks into low-dimensional latent strategy vectors  
-- (future) **learned embeddings** where models infer card relationships directly  
+## **See Also**
 
-Early results show strong predictive signal in the SVD components, suggesting they capture meaningful archetype structure.
+- Lightning talk slides (`results/Lightning Presentation.pptx`)  
+- Full academic report (`results/...Sequential Win Probability Modeling...pdf`)  
 
-### **3) Exploratory Data Analysis (EDA)**
+This repo is a foundation for future work on real-time run evaluation and sequence-based models for deck-building games.
 
-We visualize run distributions, class differences, and deck evolution across floors.  
-Key insights so far:
+--
 
-- Deck size grows steadily but with class-specific patterns  
-- Certain SVD components rise or fall predictably in winning runs  
-- Relic count is strongly correlated with late-game survival  
-- Floor-level HP curves differ sharply between victorious and losing runs  
+## **Project Structure**
 
-EDA guides our modeling decisions and helps validate that the processed dataset behaves as expected.
-
-## **Current Findings (So Far)**
-
-- SVD components are consistently among the most predictive features  
-- Ascension level is strongly monotonic with difficulty, as expected  
-- Certain archetypes appear naturally in the embedding space  
-- Early-floor decisions leave measurable signatures in final run outcome  
-- Relic acquisition rate is a major driver of win probability  
-
-These observations will be refined as we move into modeling and evaluation.
-
-## **Next Steps**
-
-- Train baseline models (Logistic Regression, Random Forest, Gradient Boosting)  
-- Evaluate deck embeddings vs. raw card counts  
-- Build per-floor win-probability curves  
-- Experiment with neural models that learn card embeddings directly  
-
-This README will be expanded once the modeling stage is complete.
+```
+.
+├── README.md
+├── misc
+│   ├── 2LayerLstmPreds.png
+│   ├── STS-img.jpeg
+│   └── asc.jpg
+├── notebooks
+│   ├── 1 - Transform Run-Level to Floor-Level.ipynb
+│   ├── 2 - Card Handling.ipynb
+│   ├── 3 - Exploratory Data Analytics.ipynb
+│   └── 4 - Modeling.ipynb
+├── pyproject.toml
+├── results
+│   ├── Lightning Presentation.pptx
+│   └── Sequential Win Probability Modeling in Slay The Spire Using Floor Level Representations and Recurrent Neural Architectures.pdf
+└── uv.lock
+```
